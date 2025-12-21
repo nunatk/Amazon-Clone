@@ -1,0 +1,341 @@
+/* BACK TO CART BUTTON */
+.back-btn {
+  margin-left: 40px;
+  margin-top: 20px;
+  padding: 10px 16px;
+  background: #f0f2f2;
+  border: 1px solid #adb1b8;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  background: #e3e6e6;
+}
+
+/* MAIN LAYOUT */
+.sp-wrapper {
+  display: flex;
+  gap: 40px;
+  padding: 40px;
+  font-family: Arial, sans-serif;
+}
+
+/* LEFT SIDE */
+.sp-left {
+  flex: 1;
+}
+
+.zoom-container {
+  width: 350px;
+  height: 380px;
+  overflow: hidden;
+}
+
+.zoom-image {
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+
+.zoom-image:hover {
+  transform: scale(1.6);
+  cursor: zoom-in;
+}
+
+/* Thumbnails */
+.sp-thumbnails {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.thumb {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #ddd;
+  padding: 4px;
+  border-radius: 4px;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.thumb:hover {
+  border-color: black;
+}
+
+/* RIGHT SIDE */
+.sp-info {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sp-title {
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.sp-description {
+  width: 80%;
+  color: #444;
+  line-height: 1.4;
+}
+
+/* Stars */
+.sp-stars {
+  color: #f0c14b;
+  font-size: 18px;
+}
+
+.sp-count {
+  margin-left: 6px;
+}
+
+/* Price */
+.sp-price {
+  font-size: 24px;
+  font-weight: bold;
+  color: #b12704;
+}
+
+/* Sizes */
+.sp-sizes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.size-btn {
+  padding: 6px 14px;
+  border: 1px solid #777;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.active-size {
+  background: #e6e6e6;
+  border-color: black;
+}
+
+.size-error {
+  color: #b12704;
+  font-size: 14px;
+}
+
+/* Buttons */
+.sp-add-btn {
+  width: 180px;
+  padding: 12px;
+  background: #ffd814;
+  border: 1px solid #fcd200;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.sp-add-btn:hover {
+  background: #f7ca00;
+}
+
+/* About section */
+.sp-about ul {
+  padding-left: 20px;
+}
+
+/* Specs */
+.spec-table table {
+  width: 80%;
+  border-collapse: collapse;
+}
+
+.spec-table th,
+.spec-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+/* FBT section */
+.fbt-box {
+  margin-top: 24px;
+  border: 1px solid #ddd;
+  padding: 20px;
+  width: 80%;
+}
+
+.fbt-flex {
+  display: flex;
+  gap: 10px;
+}
+
+.fbt-flex img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.fbt-total {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+/* Rating breakdown */
+.review-breakdown {
+  width: 70%;
+  margin-top: 20px;
+}
+
+.review-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bar {
+  flex: 1;
+  height: 10px;
+  background: #eee;
+}
+
+.fill {
+  height: 100%;
+  background: #f0c14b;
+}
+
+/* Reviews */
+.review {
+  background: #f6f6f6;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+/* Customers also bought */
+.scroll-row {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+}
+
+.scroll-card {
+  width: 150px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.scroll-card img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+/* WRAPPER – 3 column layout */
+.sp-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 20px 40px;
+}
+
+/* LEFT COLUMN */
+.sp-left {
+  width: 35%;
+}
+
+.sp-main-img {
+  width: 100%;
+  object-fit: contain;
+}
+
+.sp-thumb-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.sp-thumb {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #ddd;
+  padding: 4px;
+  cursor: pointer;
+}
+
+/* CENTER COLUMN */
+.sp-info {
+  width: 45%;
+  line-height: 1.6;
+}
+
+/* BUY BOX — RIGHT COLUMN */
+.sp-buy-box {
+  width: 20%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #fafafa;
+}
+
+.buy-price {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.delivery {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #007600;
+}
+
+/* Buttons inside buy box */
+.buybox-add-btn {
+  width: 100%;
+  background-color: #ffd814;
+  border: 1px solid #fcd200;
+  padding: 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.buy-now-btn {
+  width: 100%;
+  background-color: #ffa41c;
+  border: 1px solid #ff8f00;
+  padding: 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* BACK BUTTON */
+.back-btn {
+  margin-top: 20px;
+  margin-left: 40px;
+  background: white;
+  border: 1px solid #ddd;
+  padding: 8px 14px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+/* STAR RATING */
+.sp-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 8px 0;
+}
+
+.star {
+  font-size: 20px;
+  color: #ffa41c; /* Amazon gold */
+}
+
+.rating-count {
+  margin-left: 8px;
+  font-size: 14px;
+  color: #555;
+}

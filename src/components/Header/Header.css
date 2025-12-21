@@ -1,0 +1,259 @@
+/* Basic reset so all browsers start from the same point */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* The main Amazon-style header bar */
+.header-wrapper {
+  height: 60px;
+  background-color: #131921;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  font-family: Arial, Helvetica, sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Left side: logo and delivery location */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Container that holds the Amazon logo */
+.header-logo {
+  display: flex;
+  align-items: center;
+  padding: 6px;
+}
+
+/* Real Amazon logo image */
+.amazon-logo {
+  height: 30px;
+  object-fit: contain;
+  filter: none; /* prevents SVG logos from turning black */
+}
+
+/* Delivery location area */
+.header-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+}
+
+.location-icon {
+  font-size: 18px;
+}
+
+.deliver-text {
+  font-size: 11px;
+  color: #ccc;
+}
+
+.deliver-country {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+/* Center search bar */
+.header-search {
+  display: flex;
+  flex: 1;
+  max-width: 620px;
+  height: 40px;
+  margin: 0 20px;
+}
+
+/* Shared height for search elements */
+.search-category,
+.search-input,
+.search-button {
+  height: 40px;
+}
+
+/* Category dropdown on the left of the search bar */
+.search-category {
+  background-color: #e6e6e6;
+  border: 1px solid #ccc;
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+/* Main text input for searching products */
+.search-input {
+  flex: 1;
+  border: none;
+  padding-left: 10px;
+  font-size: 14px;
+  outline: none;
+}
+
+/* Search button with the magnifying glass */
+.search-button {
+  width: 45px;
+  border: none;
+  background-color: #febd69;
+  border-radius: 0 4px 4px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Slight color change on hover like real Amazon */
+.search-button:hover {
+  background-color: #f3a847;
+}
+
+.search-icon {
+  font-size: 18px;
+  color: black;
+}
+
+/* Right side: language, account, orders, cart */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* Language selector area */
+.header-language {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  position: relative;
+  padding: 6px;
+}
+
+/* Small flag icon */
+.flag-icon {
+  width: 20px;
+  height: 14px;
+  border: 1px solid #ccc;
+  object-fit: cover;
+}
+
+/* EN + dropdown arrow */
+.lang-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.lang-text {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.dropdown-icon {
+  font-size: 12px;
+}
+
+/* Language dropdown menu */
+.lang-dropdown {
+  position: absolute;
+  top: 45px;
+  left: 0;
+  background: white;
+  color: black;
+  padding: 10px;
+  width: 150px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  z-index: 999;
+}
+
+/* Generic header option styling */
+.header-option {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  padding: 6px;
+}
+
+/* Account section needs positioning for dropdown */
+.header-account {
+  position: relative;
+}
+
+.option-line-one {
+  font-size: 11px;
+  color: #ddd;
+}
+
+.option-line-two {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+/* Account dropdown that appears on hover */
+.account-dropdown {
+  display: none;
+  position: absolute;
+  top: 48px;
+  right: 0;
+  width: 230px;
+  background: white;
+  color: black;
+  padding: 12px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  z-index: 999;
+}
+
+/* Show dropdown only when hovering over account */
+.header-account:hover .account-dropdown {
+  display: block;
+}
+
+/* Sign-in button inside dropdown */
+.dropdown-signin-btn {
+  width: 100%;
+  padding: 6px;
+  background-color: #ffd814;
+  border: 1px solid #fcd200;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.dropdown-title {
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.dropdown-item {
+  font-size: 13px;
+  margin-top: 6px;
+  cursor: pointer;
+}
+
+/* Cart icon and item count */
+.header-cart {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px;
+}
+
+.cart-icon {
+  font-size: 24px;
+}
+
+.cart-count {
+  color: #f08804 !important;
+  font-weight: bold;
+  font-size: 16px;
+}
