@@ -21,9 +21,9 @@ exports.stripeWebhook = onRequest(
 
     try {
       event = stripe.webhooks.constructEvent(
-        req.rawBody, 
+        req.rawBody,
         sig,
-        STRIPE_WEBHOOK_SECRET.value()
+        STRIPE_WEBHOOK_SECRET.value(),
       );
     } catch (err) {
       console.error("Webhook signature verification failed:", err.message);
@@ -50,7 +50,7 @@ exports.stripeWebhook = onRequest(
     }
 
     res.json({ received: true });
-  }
+  },
 );
 
 /* ================== EXPRESS API (CHECKOUT ONLY) ================== */
@@ -65,7 +65,7 @@ app.post("/createCheckoutSession", async (req, res) => {
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      line_items: items.map(item => ({
+      line_items: items.map((item) => ({
         price_data: {
           currency: "usd",
           product_data: {
@@ -80,8 +80,8 @@ app.post("/createCheckoutSession", async (req, res) => {
         userId,
         items: JSON.stringify(items),
       },
-      success_url: "http://localhost:5173/Amazon-Clone/success",
-      cancel_url: "http://localhost:5173/Amazon-Clone/cancel",
+      success_url: "https://capable-croissant-acf622.netlify.app/success",
+      cancel_url: "https://capable-croissant-acf622.netlify.app/cancel",
     });
 
     res.json({ url: session.url });
@@ -91,7 +91,4 @@ app.post("/createCheckoutSession", async (req, res) => {
   }
 });
 
-exports.api = onRequest(
-  { secrets: [STRIPE_SECRET_KEY] },
-  app
-);
+exports.api = onRequest({ secrets: [STRIPE_SECRET_KEY] }, app);
