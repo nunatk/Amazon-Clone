@@ -1,114 +1,160 @@
 import React, { useEffect, useState } from "react";
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
+import { db } from "../../Firebase";
+import { useAuth } from "../../components/Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import Layout from "../../components/Layout/Layout";
 import "./Orders.css";
-import Loader from "../../components/Loader/Loader";
 
 export default function Orders() {
+  const { user, authLoading } = useAuth(); // 👈 important
+  const navigate = useNavigate();
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch orders from FakeStoreAPI
   useEffect(() => {
-    async function loadOrders() {
-      try {
-        const response = await fetch("https://fakestoreapi.com/carts?limit=5");
-        const carts = await response.json();
+    if (authLoading) return; // wait for auth
 
-        // Enhance each cart with product details
-        const ordersWithProducts = await Promise.all(
-          carts.map(async (cart) => {
-            const itemDetails = await Promise.all(
-              cart.products.map(async (product) => {
-                const productRes = await fetch(
-                  `https://fakestoreapi.com/products/${product.productId}`
-                );
-                const productData = await productRes.json();
-
-                return {
-                  ...productData,
-                  quantity: product.quantity
-                };
-              })
-            );
-
-            return {
-              id: cart.id,
-              date: cart.date,
-              products: itemDetails
-            };
-          })
-        );
-
-        setOrders(ordersWithProducts);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error loading orders:", error);
-      }
+    if (!user) {
+      setLoading(false);
+      return;
     }
 
-    loadOrders();
-  }, []);
+    async function fetchOrders() {
+      const q = query(
+        collection(db, "users", user.uid, "orders"),
+        orderBy("created", "desc")
+      );
+
+      const snapshot = await getDocs(q);
+
+      setOrders(
+        snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+      );
+
+      setLoading(false);
+    }
+
+    fetchOrders();
+  }, [user, authLoading]);
 
   if (loading) {
     return (
       <Layout>
-        <button className="back-btn" onClick={() => navigate(-1)}>
-         Back
-      </button>
-        <div className="orders-wrapper">
-          <Loader />
-        </div>
+        <p style={{ padding: "30px" }}>Loading orders…</p>
       </Layout>
+    );
+  }
+
+  if (!orders.length) {
+    return (
+      <Layout>
+        <p style={{ padding: "30px" }}>No orders yet.</p>
+      </Layout>
+    );
+  }
+
+  async function requestReturn(orderId, itemId) {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+
+    const ref = doc(db, "users", user.uid, "orders", orderId);
+
+    await updateDoc(ref, {
+      items: order.items.map(item =>
+        item.id === itemId
+          ? { ...item, return_status: "requested" }
+          : item
+      ),
+    });
+
+    setOrders(prev =>
+      prev.map(o =>
+        o.id === orderId
+          ? {
+              ...o,
+              items: o.items.map(i =>
+                i.id === itemId
+                  ? { ...i, return_status: "requested" }
+                  : i
+              ),
+            }
+          : o
+      )
     );
   }
 
   return (
     <Layout>
-      <section className="orders-wrapper">
-        <h1 className="orders-title">Your Orders</h1>
-        <p className="orders-sub">Below are your recent orders</p>
+      <div className="orders-page">
+        <h2>Orders & Returns</h2>
 
-        {orders.length === 0 && (
-          <div className="no-orders-box">
-            <h2>No orders found</h2>
-            <p>Once you place an order, it will appear here.</p>
-          </div>
-        )}
-
-        {/* Loop through orders */}
-        {orders.map((order) => (
+        {orders.map(order => (
           <div className="order-card" key={order.id}>
-            <h3 className="order-id">Order #{order.id}</h3>
-            <p className="order-date">
-              Placed on: {new Date(order.date).toDateString()}
-            </p>
+            <div className="order-header">
+              <div>
+                <span>ORDER PLACED</span>
+                <p>{order.created?.toDate().toDateString()}</p>
+              </div>
 
-            <div className="order-items">
-              {order.products.map((item) => (
+              <div>
+                <span>TOTAL</span>
+                <p>${order.amount}</p>
+              </div>
+
+              <div className="order-id">
+                <span>ORDER #</span>
+                <p>{order.id}</p>
+              </div>
+            </div>
+
+            <div className="order-body">
+              {order.items.map(item => (
                 <div className="order-item" key={item.id}>
-                  <img src={item.image} alt={item.title} className="item-img" />
+                  <img src={item.image} alt={item.title} />
 
-                  <div>
-                    <p className="item-title">{item.title}</p>
-                    <p className="item-qty">Quantity: {item.quantity}</p>
-                    <p className="item-price">${item.price}</p>
+                  <div className="order-item-info">
+                    <p className="title">{item.title}</p>
+                    <p>Qty: {item.quantity}</p>
+
+                    {item.return_status === "requested" && (
+                      <p style={{ color: "green" }}>Return requested</p>
+                    )}
+
+                    <div className="order-actions">
+                      <button onClick={() => navigate(`/orders/${order.id}`)}>
+                        View order
+                      </button>
+
+                      {item.return_status !== "requested" && (
+                        <button
+                          className="secondary"
+                          onClick={() =>
+                            requestReturn(order.id, item.id)
+                          }
+                        >
+                          Return or replace
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
-
-            <p className="order-total">
-              Total: $
-              {order.products
-                .reduce(
-                  (acc, item) => acc + item.price * item.quantity,
-                  0
-                )
-                .toFixed(2)}
-            </p>
           </div>
         ))}
-      </section>
+      </div>
     </Layout>
   );
 }
