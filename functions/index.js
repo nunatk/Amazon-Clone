@@ -10,51 +10,63 @@ admin.initializeApp();
 const STRIPE_SECRET_KEY = defineSecret("STRIPE_SECRET_KEY");
 const STRIPE_WEBHOOK_SECRET = defineSecret("STRIPE_WEBHOOK_SECRET");
 
-/* ================== STRIPE WEBHOOK (NO EXPRESS) ================== */
+
+/* ================= STRIPE WEBHOOK ================= */
 exports.stripeWebhook = onRequest(
   { secrets: [STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET] },
   async (req, res) => {
     const stripe = new Stripe(STRIPE_SECRET_KEY.value());
-    const sig = req.headers["stripe-signature"];
 
     let event;
 
     try {
       event = stripe.webhooks.constructEvent(
         req.rawBody,
-        sig,
-        STRIPE_WEBHOOK_SECRET.value(),
+        req.headers["stripe-signature"],
+        STRIPE_WEBHOOK_SECRET.value()
       );
     } catch (err) {
-      console.error("Webhook signature verification failed:", err.message);
       return res.status(400).send("Webhook Error");
     }
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
+      const userId = session.metadata.userId;
+
+      const pendingRef = admin
+        .firestore()
+        .collection("users")
+        .doc(userId)
+        .collection("pendingOrders")
+        .doc("cart");
+
+      const snap = await pendingRef.get();
+      const items = snap.data()?.items || [];
 
       await admin
         .firestore()
         .collection("users")
-        .doc(session.metadata.userId)
+        .doc(userId)
         .collection("orders")
         .doc(session.id)
         .set({
           amount: session.amount_total / 100,
           payment_status: session.payment_status,
           created: admin.firestore.FieldValue.serverTimestamp(),
-          items: JSON.parse(session.metadata.items),
+          items,
         });
 
-      console.log("Order saved:", session.id);
+      await pendingRef.delete();
     }
 
     res.json({ received: true });
-  },
+  }
 );
 
-/* ================== EXPRESS API (CHECKOUT ONLY) ================== */
+
+/* ================= API ================= */
 const app = express();
+
 app.use(cors({ origin: true }));
 app.use(express.json());
 
@@ -63,30 +75,35 @@ app.post("/createCheckoutSession", async (req, res) => {
     const stripe = new Stripe(STRIPE_SECRET_KEY.value());
     const { items, userId } = req.body;
 
+    await admin
+      .firestore()
+      .collection("users")
+      .doc(userId)
+      .collection("pendingOrders")
+      .doc("cart")
+      .set({ items });
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+      payment_method_types: ["card"],
+
       line_items: items.map((item) => ({
         price_data: {
           currency: "usd",
-          product_data: {
-            name: item.title,
-            images: [item.image],
-          },
+          product_data: { name: item.title },
           unit_amount: Math.round(item.price * 100),
         },
         quantity: item.quantity,
       })),
-      metadata: {
-        userId,
-        items: JSON.stringify(items),
-      },
-success_url: "https://amazon-backend.netlify.app/success",
-cancel_url: "https://amazon-backend.netlify.app/cancel",
+
+      metadata: { userId },
+
+      success_url: "https://amazon-backend.netlify.app/success",
+      cancel_url: "https://amazon-backend.netlify.app/cancel",
     });
 
     res.json({ url: session.url });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "Checkout failed" });
   }
 });
