@@ -21,7 +21,7 @@ export default function Cart() {
   async function handleCheckout() {
     // redirect if not logged in
     if (!user) {
-      navigate("/login", { state: { from: "/cart" } });
+      navigate("/auth", { state: { from: "/cart" } });
       return;
     }
 
