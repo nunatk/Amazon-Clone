@@ -80,8 +80,8 @@ app.post("/createCheckoutSession", async (req, res) => {
         userId,
         items: JSON.stringify(items),
       },
-      success_url: "https://capable-croissant-acf622.netlify.app/success",
-      cancel_url: "https://capable-croissant-acf622.netlify.app/cancel",
+success_url: "https://amazon-backend.netlify.app/success",
+cancel_url: "https://amazon-backend.netlify.app/cancel",
     });
 
     res.json({ url: session.url });
