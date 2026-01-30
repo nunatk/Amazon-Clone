@@ -3,42 +3,53 @@ import { useCart } from "../../components/CartProvider/CartProvider";
 import { FaAngleUp, FaAngleDown } from "react-icons/fa";
 import Layout from "../../components/Layout/Layout";
 import { useAuth } from "../../components/Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import "./Cart.css";
 
 export default function Cart() {
   const { cart, increaseQty, decreaseQty, removeFromCart } = useCart();
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const API = import.meta.env.VITE_API_URL;
 
   const subtotal = cart
     .reduce((total, item) => total + item.price * item.quantity, 0)
     .toFixed(2);
 
+  /* ================= CHECKOUT ================= */
   async function handleCheckout() {
+    // redirect if not logged in
     if (!user) {
-      alert("Please log in to continue");
+      navigate("/login", { state: { from: "/cart" } });
       return;
     }
 
     try {
-      const res = await fetch(
-        "https://us-central1-clone-6d071.cloudfunctions.net/api/createCheckoutSession",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: user.uid,
-            items: cart,
-          }),
-        }
-      );
+      const res = await fetch(`${API}/createCheckoutSession`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.uid,
+          items: cart,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Checkout failed");
 
       const data = await res.json();
+
+      if (!data?.url) throw new Error("Stripe URL missing");
+
+      // send user to Stripe
       window.location.href = data.url;
     } catch (err) {
-      console.log("Checkout failed:", err);
+      console.error("Checkout failed:", err);
+      alert("Something went wrong. Please try again.");
     }
   }
 
+  /* ================= UI ================= */
   return (
     <Layout>
       <div className="cart-page">
@@ -49,6 +60,7 @@ export default function Cart() {
         </div>
 
         <div className="cart-main">
+          {/* LEFT SIDE */}
           <div className="cart-left">
             {cart.length === 0 && (
               <p className="cart-empty">Your cart is empty.</p>
@@ -60,6 +72,7 @@ export default function Cart() {
 
                 <div className="cart-details">
                   <h3>{item.title}</h3>
+
                   <p className="cart-description">
                     Satisfaction Guaranteed. Return within 30 days.
                   </p>
@@ -95,6 +108,7 @@ export default function Cart() {
             ))}
           </div>
 
+          {/* RIGHT SIDE */}
           {cart.length > 0 && (
             <div className="cart-summary">
               <h3>Subtotal ({cart.length} items)</h3>
